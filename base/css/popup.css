@@ -1,0 +1,17 @@
+.btn{
+    line-height:35px;
+    padding:0 20px 0 20px;
+    background:#4C8BF5;
+    color:white;
+    margin:10px;
+    border:1px solid #3E71C1;
+    cursor:default;
+    border-radius:5px;
+    white-space: nowrap;
+}
+.btn:hover{
+    background:#487CD6;
+}
+.btn:active{
+    background:#4879CB;
+}

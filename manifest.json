@@ -1,0 +1,31 @@
+{
+    "name": "downovel",
+    "version": "0.0.1",
+    "manifest_version": 2,
+    "icons": {
+        "16": "images/a-16.png",
+        "48": "images/a-48.png",
+        "128": "images/a-128.png"
+    },
+    "description": "save the novels from a supported site",
+    "background": {
+        "scripts": ["javascript/background.js"]
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://*/*"],
+            "js": ["javascript/content.js","base/run.js"]
+        }
+    ],
+    "permissions": [
+        "management", "tabs", "storage", "*://*/*", "browsingData", "webRequest", "webRequestBlocking"
+    ],
+    "browser_action": {
+        "default_icon": {
+            "16": "images/a-16.png",
+            "48": "images/a-48.png"
+        },
+        "default_title": "downovel",
+        "default_popup": "popup.html"
+    }
+}
