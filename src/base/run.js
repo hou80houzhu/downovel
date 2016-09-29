@@ -7,7 +7,7 @@
             btn.html("<i class='loading'></i> starting");
             baseController.run(info.next, function (a) {
                 total++;
-                $(".result").show().children(1).append("<div class='result-item'>" + a.title + "</div>");
+                $(".result").show().children(1).append("<div class='result-item'><div class='result-item-a'></div><div class='result-item-b'>" + a.title + "</div></div>");
                 btn.html("<i class='loading'></i> done( " + total + " )");
             }, info).done(function (a) {
                 btn.remove();
