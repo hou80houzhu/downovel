@@ -9,12 +9,12 @@
     },
     "description": "save the novels from a supported site",
     "background": {
-        "scripts": ["javascript/background.js"]
+        "scripts": ["src/background.js"]
     },
     "content_scripts": [
         {
             "matches": ["*://*/*"],
-            "js": ["javascript/content.js","base/run.js"]
+            "js": ["src/lib/bright.js","src/content.js"]
         }
     ],
     "permissions": [
