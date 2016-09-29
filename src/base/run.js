@@ -25,7 +25,7 @@
         }
     });
     var baseController = {
-        getPage: function (url) {
+        getPage: function (url, info) {
             var ps = $.promise();
             $.ajax({
                 url: url,
@@ -33,12 +33,13 @@
                 dataType: "text",
                 success: function (a) {
                     if (a) {
-                        var t = baseController.getPageInfo(a);
-                        if (t) {
-                            ps.resolve(t);
-                        } else {
-                            ps.reject();
-                        }
+                        baseController.getPageInfo(a, info).done(function (t) {
+                            if (t) {
+                                ps.resolve(t);
+                            } else {
+                                ps.reject();
+                            }
+                        });
                     } else {
                         ps.reject();
                     }
@@ -49,37 +50,54 @@
             });
             return ps;
         },
-        getPageInfo: function (content) {
-            var n = content.split(/\<body.*?\>|\<\/body\>/);
+        getPageInfo: function (content, info) {
+            var n = content.split(/\<body.*?\>|\<\/body\>/), ps = $.promise();
             var _content = n[1];
             var main = $().create("div").html(_content).find(".bdsub").children(0);
             var next = main.children(2).find("a").last().attr("href");
             if (next.indexOf(".html") !== -1) {
-                return {
-                    title: main.children(1).text(),
-                    content: main.children(6).html(),
-                    next: main.children(2).find("a").last().attr("href")
-                };
+                if (next[0] !== "/") {
+                    var host = info.host;
+                    chrome.tabs.getSelected(null, function (tab) {
+                        var n = tab.url.substring(host.length).split("/");
+                        n.pop();
+                        n.push(next);
+                        next = n.join("/");
+                        ps.resolve({
+                            title: main.children(1).text(),
+                            content: main.children(5).html(),
+                            next: next
+                        });
+                    });
+                } else {
+                    ps.resolve({
+                        title: main.children(1).text(),
+                        content: main.children(6).html(),
+                        next: next
+                    });
+                }
             } else {
-                return null;
+                ps.resolve(null);
             }
+            return ps;
         },
         run: function (urlt, fn, info) {
             var base = $().create("div"), ps = $.promise();
-            var m = function (url) {
-                url = info.host + url;
-                baseController.getPage(url).done(function (a) {
+            var m = function (url, inf) {
+                url = inf.host + url;
+                baseController.getPage(url, inf).done(function (a) {
+                    console.log(a);
                     base.append("<div style='margin:10px 0 10px 0;'><br><br><h3>" + a.title + "</h3><br><br><p>" + a.content + "</p></div><br>");
                     try {
                         fn && fn(a);
                     } catch (e) {
                     }
-                    m(a.next);
+                    m(a.next,inf);
                 }).fail(function () {
                     ps.resolve(base.text());
                 });
             };
-            m(urlt);
+            m(urlt, info);
             return ps;
         }
     };
